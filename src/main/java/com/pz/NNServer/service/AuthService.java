@@ -1,6 +1,7 @@
 package com.pz.NNServer.service;
 
 import com.pz.NNServer.dto.RegisterRequest;
+import com.pz.NNServer.model.NotificationEmail;
 import com.pz.NNServer.model.User;
 import com.pz.NNServer.model.VerificationToken;
 import com.pz.NNServer.repository.UserRepo;
@@ -19,6 +20,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepo userRepo;
     private final VerificationTokenRepo verificationTokenRepo;
+    private final MailService mailService;
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -30,7 +32,10 @@ public class AuthService {
 
         userRepo.save(user);
 
-        generatedVerificationToken(user);
+        String token = generatedVerificationToken(user);
+        mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(),"Thank you for signing up!!!" +
+                "Please click on the link below to activate your account:" +
+                "http://localhost:8080/api/auth/accountVerification" + token));
     }
 
     private String generatedVerificationToken(User user) {
