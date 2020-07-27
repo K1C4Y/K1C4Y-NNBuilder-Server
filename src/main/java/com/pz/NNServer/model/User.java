@@ -26,4 +26,5 @@ public class User {
     private String email;
     @OneToMany(fetch = LAZY)
     private List<NNModel> models;
+    private boolean enabled;
 }
