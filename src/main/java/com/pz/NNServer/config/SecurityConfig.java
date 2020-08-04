@@ -10,16 +10,22 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Override
-    public void configure(HttpSecurity httpSecuruty) throws Exception{
-       httpSecuruty.csrf().disable()
-               .authorizeRequests()
-               .antMatchers("/api/auth/**")
-               .permitAll()
-               .anyRequest()
-               .authenticated();
+//    @Override
+//    public void configure(HttpSecurity httpSecuruty) throws Exception{
+//       httpSecuruty.csrf().disable()
+//               .authorizeRequests()
+//               .antMatchers("/api/auth/signup")
+//               .permitAll()
+//               .anyRequest()
+//               .authenticated();
+//   }
+	@Override
+    public void configure(HttpSecurity httpSecurity) throws Exception{
+    		httpSecurity.cors().and().csrf().disable()
+    			.authorizeRequests().antMatchers("/**").permitAll();
     }
-
+    
+    
     @Bean
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();

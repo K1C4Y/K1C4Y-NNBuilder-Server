@@ -1,13 +1,21 @@
 package com.pz.NNServer.model;
 
-import lombok.*;
-import org.springframework.lang.NonNull;
-
-import javax.persistence.*;
-import java.util.List;
-
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
+
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import org.springframework.lang.NonNull;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data

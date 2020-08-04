@@ -1,17 +1,21 @@
 package com.pz.NNServer.service;
 
+import java.util.Optional;
+import java.util.UUID;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.pz.NNServer.dto.RegisterRequest;
+import com.pz.NNServer.exceptions.SpringNNBuilderMailException;
 import com.pz.NNServer.model.NotificationEmail;
 import com.pz.NNServer.model.User;
 import com.pz.NNServer.model.VerificationToken;
 import com.pz.NNServer.repository.UserRepo;
 import com.pz.NNServer.repository.VerificationTokenRepo;
-import lombok.AllArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
+import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
@@ -35,7 +39,7 @@ public class AuthService {
         String token = generatedVerificationToken(user);
         mailService.sendMail(new NotificationEmail("Please activate your account", user.getEmail(),"Thank you for signing up!!!" +
                 "Please click on the link below to activate your account:" +
-                "http://localhost:8080/api/auth/accountVerification" + token));
+                "http://localhost:8080/api/auth/accountVerification/" + token));
     }
 
     private String generatedVerificationToken(User user) {
@@ -48,4 +52,21 @@ public class AuthService {
 
         return token;
     }
+
+	public void verifyAccount(String token) {
+		Optional<VerificationToken> verificationToken = verificationTokenRepo.findByToken(token);
+		verificationToken.orElseThrow(() -> new SpringNNBuilderMailException("Invalid token"));
+		fetchUserAndEnable(verificationToken.get());
+	}
+	
+	@Transactional
+	private void fetchUserAndEnable(VerificationToken verificationToken) {
+		String username = verificationToken.getUser().getName();
+		User user = userRepo.findByName(username)
+		.orElseThrow(() -> new SpringNNBuilderMailException("User name " + username + " not found"));
+		user.setEnabled(true);
+		userRepo.save(user);
+
+		
+	}
 }
