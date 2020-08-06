@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pz.NNServer.dto.AuthenticationResponse;
+import com.pz.NNServer.dto.LoginRequest;
 import com.pz.NNServer.dto.RegisterRequest;
 import com.pz.NNServer.service.AuthService;
 
@@ -31,6 +33,11 @@ public class AuthController {
     public ResponseEntity<String> veryfyAccount(@PathVariable String token){
     	authService.verifyAccount(token);
     	return new ResponseEntity<>("Account activated succesfully",HttpStatus.OK);
+    }
+    
+    @GetMapping("/login")
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest){
+    	return authService.login(loginRequest);
     }
    
 }

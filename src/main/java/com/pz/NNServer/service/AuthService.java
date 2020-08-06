@@ -3,10 +3,16 @@ package com.pz.NNServer.service;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pz.NNServer.dto.AuthenticationResponse;
+import com.pz.NNServer.dto.LoginRequest;
 import com.pz.NNServer.dto.RegisterRequest;
 import com.pz.NNServer.exceptions.SpringNNBuilderMailException;
 import com.pz.NNServer.model.NotificationEmail;
@@ -14,6 +20,7 @@ import com.pz.NNServer.model.User;
 import com.pz.NNServer.model.VerificationToken;
 import com.pz.NNServer.repository.UserRepo;
 import com.pz.NNServer.repository.VerificationTokenRepo;
+import com.pz.NNServer.security.JwtProvider;
 
 import lombok.AllArgsConstructor;
 
@@ -25,6 +32,9 @@ public class AuthService {
     private final UserRepo userRepo;
     private final VerificationTokenRepo verificationTokenRepo;
     private final MailService mailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtProvider jwtProvider;
+
 
     @Transactional
     public void signup(RegisterRequest registerRequest){
@@ -68,5 +78,14 @@ public class AuthService {
 		userRepo.save(user);
 
 		
+	}
+
+	public AuthenticationResponse login(LoginRequest loginRequest) {
+		Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+				loginRequest.getName(),
+				loginRequest.getPassword()));
+		SecurityContextHolder.getContext().setAuthentication(authenticate);
+		String token = jwtProvider.generateToken(authenticate);
+		return new AuthenticationResponse(token, loginRequest.getName());
 	}
 }
