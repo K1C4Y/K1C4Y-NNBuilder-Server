@@ -1,50 +1,48 @@
 package com.pz.NNServer.security;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.Key;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableKeyException;
-import java.security.cert.CertificateException;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 
-import com.pz.NNServer.exceptions.NNBuilderException;
-import com.pz.NNServer.model.User;
-
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtProvider {
 	
-	private KeyStore keyStore;
+//	private KeyStore keyStore;
+	private Key key;
 	
+	@PostConstruct
 	public void init() {
-		try {
-            keyStore = KeyStore.getInstance("JKS");
-            InputStream resourceAsStream = getClass().getResourceAsStream("/NNBuilder.jks");
-            keyStore.load(resourceAsStream, "secret".toCharArray());
-		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException |IOException e) {
-			throw new NNBuilderException("Exception occurred while loading keystore", e);
-		}
+//		try {
+//			keyStore = KeyStore.getInstance("JKS");
+//			InputStream resourceAsStream = getClass().getResourceAsStream("/NNBuilder.jks");
+//			keyStore.load(resourceAsStream, "secret".toCharArray());
+//		} catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
+//			throw new NNBuilderException("Exception occurred while loading keystore");
+//		}
+		key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 	}
 	
 	public String generateToken(Authentication authentication) {
-		User principal = (User) authentication.getPrincipal();
+		org.springframework.security.core.userdetails.User principal = (User) authentication.getPrincipal();
 		return Jwts.builder()
-				.setSubject(principal.getName())
-				.signWith(getPrivateKey())
+				.setSubject(principal.getUsername())
+				.signWith(key)
 				.compact();
 	}
-
-	private Key getPrivateKey() {
-		try {
-			return keyStore.getKey("NNBuilder", "supersecretkey".toCharArray());
-		} catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-			throw new NNBuilderException("Exception occoured while geting key from keystore");
-		}
-	}
+	
+//	private PrivateKey getPrivateKey() {
+//		try {
+//			return (PrivateKey) keyStore.getKey("springblog", "secret".toCharArray());
+//		} catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
+//			throw new NNBuilderException("Exception occured while retrieving public key from keystore");
+//		}
+//	}	
 }

@@ -57,9 +57,7 @@ public class AuthService {
         VerificationToken verificationToken = new VerificationToken();
         verificationToken.setToken(token);
         verificationToken.setUser(user);
-
         verificationTokenRepo.save(verificationToken);
-
         return token;
     }
 
