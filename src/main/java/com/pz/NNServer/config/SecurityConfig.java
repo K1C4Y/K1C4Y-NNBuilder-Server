@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.pz.NNServer.security.JwtAuthentificationFilter;
 
 import lombok.AllArgsConstructor;
 
@@ -19,11 +22,17 @@ import lombok.AllArgsConstructor;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	private final UserDetailsService userDetailsService;
+	
+	@Bean
+	public JwtAuthentificationFilter jwtAuthentificationFilter() {
+		return new JwtAuthentificationFilter();
+	}
 
 	@Override
     public void configure(HttpSecurity httpSecurity) throws Exception{
     		httpSecurity.cors().and().csrf().disable()
     			.authorizeRequests().antMatchers("/**").permitAll();
+    		httpSecurity.addFilterBefore(jwtAuthentificationFilter(),UsernamePasswordAuthenticationFilter.class);
     }
     
 	@Autowired

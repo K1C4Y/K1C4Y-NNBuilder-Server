@@ -35,7 +35,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
-
     @Transactional
     public void signup(RegisterRequest registerRequest){
         User user = new User();
@@ -74,8 +73,6 @@ public class AuthService {
 		.orElseThrow(() -> new SpringNNBuilderMailException("User name " + username + " not found"));
 		user.setEnabled(true);
 		userRepo.save(user);
-
-		
 	}
 
 	public AuthenticationResponse login(LoginRequest loginRequest) {
