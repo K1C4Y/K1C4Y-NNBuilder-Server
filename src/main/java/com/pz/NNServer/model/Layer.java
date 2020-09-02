@@ -1,15 +1,23 @@
 package com.pz.NNServer.model;
 
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.IDENTITY;
+
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+
+import org.springframework.lang.NonNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.lang.NonNull;
-
-import javax.persistence.*;
-
-import static javax.persistence.FetchType.LAZY;
-import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
@@ -22,11 +30,17 @@ public class Layer {
     private int layerId;
     @NonNull
     private String type;
-    @ManyToOne(fetch = LAZY)
+    @ManyToMany(fetch = LAZY)
     @JoinColumn(name= "modelId")
-    private NNModel model;
+    private List<NNModel> model;
     private float primNum;
     private float secNum;
-    private String activation;
+    private String activation;    
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name= "userId")
+    private User user;
+
+    
+   
 
 }

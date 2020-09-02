@@ -35,4 +35,6 @@ public class User {
     @OneToMany(fetch = LAZY)
     private List<NNModel> models;
     private boolean enabled;
+    @OneToMany(fetch = LAZY)
+    private List<Layer> layers;
 }

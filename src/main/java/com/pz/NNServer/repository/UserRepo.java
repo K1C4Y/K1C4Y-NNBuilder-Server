@@ -12,4 +12,5 @@ import com.pz.NNServer.model.User;
 public interface UserRepo extends JpaRepository<User, UUID> {
 
 	Optional<User> findByName(String name);
+	Optional<User> findByUserId(int userId);
 }
